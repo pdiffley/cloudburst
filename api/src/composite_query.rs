@@ -1,20 +1,10 @@
-use std::collections::{HashMap, HashSet};
-use std::env;
-use std::error::Error;
-use std::fmt;
+use postgres::Transaction;
+use postgres::types::ToSql;
 
-use bytes::{Bytes, BytesMut};
-use itertools::Itertools;
-use postgres::{Client, NoTls, Row, Transaction};
-use postgres::types::{ToSql, Type};
-use prost::Message;
-use sql_query_builder;
 use uuid::Uuid;
 use crate::basic_read::get_document;
 
 use crate::protos::document_protos::Document;
-use crate::protos::document_protos::field_value::Value;
-use crate::protos::document_protos::FieldValue;
 use crate::security_rules::{Operation, operation_is_allowed, UserId};
 use crate::security_rules::UserId::User;
 use crate::sql_types::field_value;

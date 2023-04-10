@@ -1,31 +1,24 @@
-use std::collections::{HashMap, HashSet};
+use std::collections::{HashMap};
 use std::env;
 use std::error::Error;
-use std::fmt;
 use std::process::Command;
 
-use bytes::{Bytes, BytesMut};
-use itertools::Itertools;
-use postgres::{Client, IsolationLevel, NoTls, Row, Transaction};
-use postgres::types::{ToSql, Type};
+use postgres::{Client, IsolationLevel, NoTls, Transaction};
 use prost::Message;
-use stopwatch::Stopwatch;
 use uuid::Uuid;
 
 use protos::document_protos::Document;
 use protos::document_protos::DocumentId;
-use protos::document_protos::field_value::Value;
 use protos::document_protos::field_value::Value::IntegerValue;
 use protos::document_protos::field_value::Value::StringValue;
 use protos::document_protos::FieldValue;
 use sql_types::field_value;
 
 use crate::basic_read::{get_document, get_documents, get_documents_from_collection_group, subscribe_to_collection, subscribe_to_collection_group, subscribe_to_document};
-use crate::composite_query::{composite_query, CompositeFieldGroup, CompositeFieldGroupType, QueryParameter, subscribe_to_composite_query};
+use crate::composite_query::{composite_query, CompositeFieldGroup, QueryParameter, subscribe_to_composite_query};
 use crate::security_rules::UserId;
 use crate::simple_query::simple_query;
 use crate::simple_query::subscribe_to_simple_query;
-use crate::sql_types::Unit;
 use crate::write::{delete_document, write_document};
 
 pub mod protos;
@@ -39,7 +32,6 @@ mod security_rules;
 mod update_queue;
 mod client_connection_endpoint;
 mod transaction;
-mod post;
 
 // create an alias for a Result that can contain any error
 type Result<T> = std::result::Result<T, Box<dyn Error>>;

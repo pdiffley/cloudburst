@@ -1,5 +1,4 @@
 use postgres::Transaction;
-use uuid::Uuid;
 
 pub fn write_change_to_update_queues(
   transaction: &mut Transaction,

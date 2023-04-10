@@ -1,24 +1,13 @@
-use std::collections::{HashMap, HashSet};
-use std::env;
-use std::error::Error;
-use std::fmt;
-
-use bytes::{Bytes, BytesMut};
-use itertools::Itertools;
-use postgres::{Client, NoTls, Row, Transaction};
-use postgres::types::{ToSql, Type};
+use postgres::{Transaction};
 use prost::Message;
 use uuid::Uuid;
 
 use crate::basic_read::{get_document, get_matching_basic_subscription_ids};
 use crate::composite_query::{add_document_to_composite_query_tables, CompositeFieldGroup, delete_document_from_composite_query_tables, get_matching_composite_query_subscriptions};
 use crate::protos::document_protos::Document;
-use crate::protos::document_protos::field_value::Value;
-use crate::protos::document_protos::FieldValue;
 use crate::security_rules::{Operation, operation_is_allowed, UserId};
 use crate::security_rules::UserId::User;
 use crate::simple_query::{add_document_to_simple_query_table, delete_document_from_simple_query_table, get_matching_simple_query_subscriptions};
-use crate::sql_types::field_value;
 use crate::update_queue::write_change_to_update_queues;
 
 fn create_document(
