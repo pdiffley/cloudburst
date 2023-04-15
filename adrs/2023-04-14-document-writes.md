@@ -14,7 +14,7 @@ The general process for all write operations is as follows
   a. categories for the way a field can change include (deletion, addition, modification)
 2. update the document in the Documents table
 3. update the simple and complex query lookup tables for the changed fields
-4. get the list of subscriptions affected by the write
+4. get the list of subscriptions affected by the write based on the changed fields
 
 
 ## Delete
