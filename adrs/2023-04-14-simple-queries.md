@@ -1,48 +1,37 @@
 # Simple Query Support
 
-TODO: Convert to lightweight ADR format: https://github.com/joelparkerhenderson/architecture-decision-record/blob/main/templates/decision-record-template-by-michael-nygard/index.md
+## Status
 
-Do we offer the firestore support all fields option?
+Proposed
 
-Pro: Avoids work of specifying new indexes before migrating to cloudburst
+## Context
 
-Con: Automatically supporting all fields dramatically affects performance
+Firestore offers a feature that we'll call "automatic simple query indexing". A "simple query" in this context refers to any query that sorts or filters by only one document field. "Automatic" means that indexes for this category of queries are built for all collections, without users having to manually enable or configure them.
 
-Provide the option of both?
+This document discusses the extent to which Cloudburst should implement an analogous feature.
 
-Just more work and complexity, but is the best of both worlds.
+### Tradeoffs
 
-Best plan
+All query indexes in Cloudburst have write performance costs. Adding indexes automatically for all fields would incur a significant write performance cost by default for users. This is true even for use cases that require indexes for very few document fields.
 
-Allows people to start with the easy version and then optimize when they are scaled up or their requests are stable.
+In addition, this makes writes for large, deeply nested documents (like rich text documents) particularly slow, as indexes will need to be generated for each nested property on each write.
 
-## Simple Query Support for All Fields
+On the other hand, the ability to write arbitrary data to collections, and change the shape of that data over time without thinking about a "schema" or other aspects of data migration is a significant factor in the appeal of document stores like Cloudburst. Users will likely expect to be able to construct basic queries for their data without requiring initial setup.
 
-One table that supports queries for document ids based on a single field name and value (see schema review)
+## Decision
 
-One table that supports looking up all subscribed queries on a document's field.
+Cloudburst should support automatic simple query indexing out of the box, but allow users to opt out, and alternatively manually specify the fields that should be indexed for simple queries.
 
-If automatic query support for all fields is on, 
-on document write,
-1. all fields in the document are added to the simple query look up table
-2. we check for all possible subscriptions for all fields and operator combinations
+This should allow new users to develop their applications freely to start, and later choose to optimize, once their query patterns are more stable.
 
-on query,
-1. the query results are returned
+## Conseqeuences
 
-on subscription,
-1. the subscription is added to the subscription table
+As noted earlier, this will mean that out-of-the-box write performance will be worse, to support writing to indexes for all fields.
 
-If automatic query support is off, (todo: how do we track which fields are indexed for queries?)
+This adds a new configuration interface for Cloudburst, as users will need to be able to disable automatic simple query indexing. There will also need to be an interface for specifying which fields should be indexed for a given collection or collection group.
 
-on document write,
-1. fields that support queries (for the documents collection and/or collection group) will be added
-  to the simple query lookup table
-2. we check for subscriptions on the supported field and operator combinations
+Cloudburst will maintain a table for simple query lookups, allowing lookup of documemt ids by field value. There will be another table that allows lookups of subscription ids by field name.
 
-on query,
-1. the query results are returned if the query is supported
+See the schema review for more detail on these tables.
 
-on subscription,
-1. the subscription is added to the subscription table if the query is supported
-
+Cloudburst will need to be able to quickly lookup the configuration for a project and condition its writes to these index tables on that configuration. We should allow this requirement to inform decisions about the Cloudburst configuration system.
