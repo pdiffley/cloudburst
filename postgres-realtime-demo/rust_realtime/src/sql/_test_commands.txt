@@ -1,0 +1,1 @@
+psql test -f src/sql/test_trigger.sql
