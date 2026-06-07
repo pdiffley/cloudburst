@@ -1,0 +1,17 @@
+{
+  "extends": "@tsconfig/strictest",
+  "compilerOptions": {
+    "incremental": true,
+    "declaration": true,
+    "outDir": "dist",
+    "rootDir": "src",
+    "moduleResolution": "bundler",
+    "module": "ESNext",
+    "lib": ["es2020", "dom"],
+    "target": "es2020",
+    "jsx": "react-jsx"
+  },
+  "include": ["src"],
+  "exclude": ["typedoc.config.js"],
+  "allowJs": true
+}
